@@ -9,11 +9,19 @@ info ={}
 info_tag = ["cciBuNum","cciSiteName","cciWorkOrderNum","applicationNum","revisionNum"]
 
 for child in root:
-    for grandchild in child:
-        if grandchild.tag == "cciInfo":
-            for grandgrandchild in grandchild:
-                if grandgrandchild.tag in info_tag:
-                    info[grandgrandchild.tag]=grandgrandchild.text
+    if child.tag == "towerMetadata":
+        for grandchild in child:
+            if grandchild.tag == "cciInfo":
+                for grandgrandchild in grandchild:
+                    if grandgrandchild.tag in info_tag:
+                        info[grandgrandchild.tag]=grandgrandchild.text
+    if child.tag == "discreteLoadData":
+        data = []
+        for elem in child:
+            key = elem.findtext("USName")
+            data.append((key, elem))
+        data.sort()
+        child[:]=[item[-1] for item in data]
 
 for child in foundaroot:
     if child.tag == "General":
@@ -26,6 +34,9 @@ for child in foundaroot:
                 grandchild.text=info["applicationNum"]+" rev."+info["revisionNum"]
             if grandchild.tag=="WO":
                 grandchild.text=info["cciWorkOrderNum"]
-                
+
+#sort the discrete load by 
+
                 
 foundation.write("NEW FOUND.xml")
+tree.write("xml new.xml")
